@@ -46,10 +46,12 @@ int interprete (sequence_t* seq, bool debug)
 
     // À partir d'ici, beaucoup de choses à modifier dans la suite.
     printf("\n>>>>>>>>>>> A Faire : interprete.c/interprete() <<<<<<<<<<<<<<<<\n");
-    commande = 'A' ; //à modifier: premiere commande de la sequence
+    cellule_t *cel=seq->tete;
+    if (cel!=NULL){
+    commande =cel->command;} 
     int ret;         //utilisée pour les valeurs de retour
 
-    while ( true ) { //à modifier: condition de boucle
+    while (commande!='\0') { //à modifier: condition de boucle
 
         switch (commande) {
             /* Ici on avance tout le temps, à compléter pour gérer d'autres commandes */
@@ -59,11 +61,17 @@ int interprete (sequence_t* seq, bool debug)
                 if (ret == VICTOIRE) return VICTOIRE; /* on a atteint la cible */
                 if (ret == RATE)     return RATE;     /* tombé dans l'eau ou sur un rocher */
                 break; /* à ne jamais oublier !!! */
-
+            case 'G':
+                gauche();
+                break;
+            case 'D':
+                droite();
+                break;
             default:
                 eprintf("Caractère inconnu: '%c'\n", commande);
         }
-
+        cel=cel->suivant;
+        commande=cel->command;
         /* Affichage pour faciliter le debug */
         if (! silent_mode) {
             afficherCarte();

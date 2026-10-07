@@ -39,14 +39,16 @@ void detruireCellule (cellule_t* cel)
  */
 void conversion (char *texte, sequence_t *seq)
 {
-  seq->tete=NULL;
-  cellule_t *queue=seq->tete;
-  int i=0;
-  while (texte[i]!='\0'){
-    queue=nouvelleCellule;
+    seq->tete=NULL;
+    cellule_t *queue=seq->tete;
+    int i=0;
+    while (texte[i]!='\0'){
+        queue=nouvelleCellule();
+        queue->command=texte[i];
+        queue=queue->suivant;
+        }
+    queue=nouvelleCellule();
     queue->command=texte[i];
-    queue->suivant;
-  }
 }
 
 
