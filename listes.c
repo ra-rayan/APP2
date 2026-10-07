@@ -24,16 +24,13 @@ cellule_t* nouvelleCellule (void)
     cel->suivant=NULL;
     cel->command='\0';
     return cel;
-    printf("\n>>>>>>>>>>> A Faire : liste.c/nouvelleCellule() <<<<<<<<<<<<<<<<\n");
     return NULL;
 }
 
 
 void detruireCellule (cellule_t* cel)
-{
-    free(cel);
-    printf("\n>>>>>>>>>>> A Faire : liste.c/detruireCellule() <<<<<<<<<<<<<<<<\n");
-}
+    {free(cel);
+}   
 
 
 /* Attention: seq est utilisée pour une "valeur de retour", pour y stocker la 
@@ -42,6 +39,7 @@ void detruireCellule (cellule_t* cel)
  */
 void conversion (char *texte, sequence_t *seq)
 {
+  seq->tete=NULL;
   cellule_t *queue=seq->tete;
   int i=0;
   while (texte[i]!='\0'){
@@ -49,8 +47,6 @@ void conversion (char *texte, sequence_t *seq)
     queue->command=texte[i];
     queue->suivant;
   }
-
-    printf("\n>>>>>>>>>>> A Faire : liste.c/conversion() <<<<<<<<<<<<<<<<\n");
 }
 
 
