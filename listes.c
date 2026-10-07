@@ -20,7 +20,10 @@ bool silent_mode = false;
 
 cellule_t* nouvelleCellule (void)
 {
-    /* À compléter (utiliser malloc) */
+    cellule_t *cel=malloc(sizeof(cellule_t));
+    cel->suivant=NULL;
+    cel->command='\0';
+    return cel;
     printf("\n>>>>>>>>>>> A Faire : liste.c/nouvelleCellule() <<<<<<<<<<<<<<<<\n");
     return NULL;
 }
@@ -28,7 +31,7 @@ cellule_t* nouvelleCellule (void)
 
 void detruireCellule (cellule_t* cel)
 {
-    /* À compléter (utiliser free) */
+    free(cel);
     printf("\n>>>>>>>>>>> A Faire : liste.c/detruireCellule() <<<<<<<<<<<<<<<<\n");
 }
 
@@ -39,19 +42,32 @@ void detruireCellule (cellule_t* cel)
  */
 void conversion (char *texte, sequence_t *seq)
 {
-  /* À compléter */
+  cellule_t *queue=seq->tete;
+  int i=0;
+  while (texte[i]!='\0'){
+    queue=nouvelleCellule;
+    queue->command=texte[i];
+    queue->suivant;
+  }
+
     printf("\n>>>>>>>>>>> A Faire : liste.c/conversion() <<<<<<<<<<<<<<<<\n");
 }
 
 
 
-
+void rec_aff(cellule_t *cel){
+    if (cel!=NULL){
+        printf("%c ",cel->command);
+        rec_aff(cel->suivant);
+    }
+    
+}
 
 
 void afficher (sequence_t* seq)
 {
-    assert (seq); /* Le pointeur doit être valide */
-    /* À compléter */
-    printf("\n>>>>>>>>>>> A Faire : liste.c/afficher() <<<<<<<<<<<<<<<<\n");
+    assert (seq);
+    rec_aff(seq->tete);
+     /* Le pointeur doit être valide */   
 }
 
