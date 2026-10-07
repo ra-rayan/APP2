@@ -46,9 +46,8 @@ void conversion (char *texte, sequence_t *seq)
         queue=nouvelleCellule();
         queue->command=texte[i];
         queue=queue->suivant;
+        i++;
         }
-    queue=nouvelleCellule();
-    queue->command=texte[i];
 }
 
 

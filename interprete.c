@@ -35,7 +35,6 @@ int interprete (sequence_t* seq, bool debug)
 
 
     debug = true; /* À enlever par la suite et utiliser "-d" sur la ligne de commandes */
-
     /* L'affichage est désactivé en mode silencieux */
     if (! silent_mode) {
         printf ("Programme:");
@@ -43,19 +42,15 @@ int interprete (sequence_t* seq, bool debug)
         printf ("\n");
         if (debug) stop();
     }
-
     // À partir d'ici, beaucoup de choses à modifier dans la suite.
-    printf("\n>>>>>>>>>>> A Faire : interprete.c/interprete() <<<<<<<<<<<<<<<<\n");
-    cellule_t *cel=seq->tete;
-    if (cel!=NULL){
-    commande =cel->command;} 
+        cellule_t *cel=seq->tete;
+        
     int ret;         //utilisée pour les valeurs de retour
 
-    while (commande!='\0') { //à modifier: condition de boucle
+    while (cel!=NULL) { //à modifier: condition de boucle
+        commande = cel->command;
 
         switch (commande) {
-            /* Ici on avance tout le temps, à compléter pour gérer d'autres commandes */
-
             case 'A':
                 ret = avance();
                 if (ret == VICTOIRE) return VICTOIRE; /* on a atteint la cible */
@@ -69,9 +64,8 @@ int interprete (sequence_t* seq, bool debug)
                 break;
             default:
                 eprintf("Caractère inconnu: '%c'\n", commande);
-        }
+            }
         cel=cel->suivant;
-        commande=cel->command;
         /* Affichage pour faciliter le debug */
         if (! silent_mode) {
             afficherCarte();

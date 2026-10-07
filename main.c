@@ -54,9 +54,9 @@ void launch (bool debug, int carte_num)
         }
 
         /* curiosity_reset (cur); */
+        printf("Programme converti en liste chainee:\n");
 
         conversion(program,&prog_seq);
-
         switch (interprete (&prog_seq, debug)) { //interprete le programme lu jusqu'a la fin de son execution 
 
             if (! silent_mode) {
