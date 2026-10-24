@@ -31,8 +31,8 @@ extern bool silent_mode;
 
 
 struct cellule {
-    char   command;
-    /* vous pouvez rajouter d'autres champs ici */
+    char command;
+    struct sequence* bloc; 
     struct cellule *suivant;
 };
 typedef struct cellule cellule_t;
@@ -50,5 +50,10 @@ void conversion (char *texte, sequence_t *seq);
 
 void afficher (sequence_t* seq);
 
+void empiler(sequence_t* seq, char c); // j ai ajouter une cellule pour le debut de la liste
+char depiler(sequence_t* seq); // supprime la premiere ccellule pour liberer la mimoire  
+
+void empiler_bloc(sequence_t* seq, sequence_t* b);
+sequence_t* depiler_bloc(sequence_t* seq);
 
 #endif
