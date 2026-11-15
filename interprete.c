@@ -25,7 +25,7 @@ void stop (void)
 int interprete (sequence_t* seq, bool debug)
 {
     char commande;
-    int ret;
+    //int ret;
     
     sequence_t pile;
     pile.tete = NULL;
@@ -139,17 +139,93 @@ int interprete (sequence_t* seq, bool debug)
                     }
                     break;
                 }
+                case 'X':
+                {
+                    echanger_2elem_sommet(&pile);
+                    break;
+                }
+                case '!':
+                    {sequence_t* bloc = depiler_bloc(&pile);
+                    inserer_en_tete(seq, bloc);
+                    break;
+                }
+                case 'B':
+                {   int n=depiler(&pile);
+                    sequence_t* cmd = depiler_bloc(&pile);
+                    if (n > 0) {
+                            sequence_t* copie = cloner_bloc(cmd);
+                            empiler_bloc(&pile, cmd);
+                            empiler(&pile, n - 1);
+                            cellule_t* b = nouvelleCellule();
+                            b->command = 'B';
+                            b->suivant = seq->tete;
+                            seq->tete = b;                         
+                            inserer_en_tete(seq, copie); 
+                            free(copie);
+                            } 
+                            else {
+                                while (cmd->tete != NULL) depiler(cmd);
+                                free(cmd);
+                                }
+                            break;
+                            }
+                case 'R':
+                {
+                    int x = depiler(&pile);
+                    int n = depiler(&pile);
+                    if (n <= 0) break;
+                    x = ((x % n) + n) % n;
+                    cellule_t** tab = malloc(n * sizeof(cellule_t*));
+                    for (int i = n - 1; i >= 0; i--) {
+                        assert(pile.tete != NULL);
+                        tab[i] = pile.tete;
+                        pile.tete = pile.tete->suivant;
+                    }
+                    for (int i = 0; i < n; i++) {
+                        cellule_t* c = tab[(i + x) % n];
+                        c->suivant = pile.tete;
+                        pile.tete = c;
+                    }
+                    free(tab);
+                    break;
+                }
+                case 'C':
+                {
+                    if (sommet_est_bloc(&pile)) {
+                        sequence_t* b = depiler_bloc(&pile);
+                        sequence_t* copie = cloner_bloc(b);
+                        empiler_bloc(&pile, b);
+                        empiler_bloc(&pile, copie);
+                    } else {
+                        int v = depiler(&pile);
+                        empiler(&pile, v);
+                        empiler(&pile, v);
+                    }
+                    break;
+                }
+                case 'I':
+                {
+                    if (sommet_est_bloc(&pile)) {
+                        detruire_bloc(depiler_bloc(&pile));
+                    } else {
+                        depiler(&pile);
+                    }
+                    break;
+                }
                 case 'A':
-                    ret = avance();
+                    {int ret = avance();
                     if (ret == VICTOIRE) return VICTOIRE;
                     if (ret == RATE)     return RATE;
                     break;
+                }
                 case 'G':
-                    gauche();
+                    {gauche();
                     break;
+                }
                 case 'D':
-                    droite();
+                    {droite();
                     break;
+                }
                 case ' ':
                 case '\n':
                     break;

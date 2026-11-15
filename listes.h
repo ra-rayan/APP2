@@ -56,4 +56,10 @@ char depiler(sequence_t* seq); // supprime la premiere ccellule pour liberer la 
 void empiler_bloc(sequence_t* seq, sequence_t* b);
 sequence_t* depiler_bloc(sequence_t* seq);
 
+void echanger_2elem_sommet(sequence_t *pile);
+void inserer_en_tete(sequence_t *routine, sequence_t *bloc);
+sequence_t* cloner_bloc(sequence_t* src);
+bool sommet_est_bloc(sequence_t *pile);
+void detruire_bloc(sequence_t *b);
+
 #endif

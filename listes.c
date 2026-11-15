@@ -63,19 +63,10 @@ void conversion(char *texte, sequence_t *seq) {
 
 
 
-void rec_aff(cellule_t *cel){
-    if (cel != NULL){
-        printf("%c", cel->command); 
-        rec_aff(cel->suivant);
-    }
-}
-
-
-void afficher (sequence_t* seq)
-{
-    assert (seq);
-    rec_aff(seq->tete);
-       
+void afficher(sequence_t* seq) {
+    assert(seq);
+    for (cellule_t *c = seq->tete; c != NULL; c = c->suivant)
+        printf("%c", c->command);
 }
 
 void empiler(sequence_t* seq, char c) {
@@ -105,12 +96,54 @@ void empiler_bloc(sequence_t* seq, sequence_t* b) {
 }
 
 sequence_t* depiler_bloc(sequence_t* seq) {
-    if (seq->tete == NULL || seq->tete->command != '{') {
-        return NULL; 
-    }
+    if (seq->tete == NULL || seq->tete->bloc == NULL) return NULL;
     cellule_t* a_supprimer = seq->tete;
     sequence_t* valeur_bloc = a_supprimer->bloc;
     seq->tete = a_supprimer->suivant;
     detruireCellule(a_supprimer);
     return valeur_bloc;
+}
+void echanger_2elem_sommet(sequence_t *pile) {
+    if (pile->tete == NULL || pile->tete->suivant == NULL) return;
+    cellule_t *a = pile->tete;       
+    cellule_t *b = a->suivant;     
+    a->suivant = b->suivant;
+    b->suivant = a;
+    pile->tete = b;
+}
+void inserer_en_tete(sequence_t *routine, sequence_t *bloc){
+    
+    assert(routine != NULL);
+    assert(bloc != NULL);
+    if (bloc->tete == NULL) return;
+    cellule_t *c = bloc->tete;
+    while (c->suivant != NULL) c = c->suivant;
+    c->suivant = routine->tete;
+    routine->tete = bloc->tete;
+    bloc->tete = NULL;
+}
+
+sequence_t* cloner_bloc(sequence_t* src) {
+    assert(src != NULL);
+    sequence_t* copie = malloc(sizeof(sequence_t));
+    copie->tete = NULL;
+    cellule_t* fin = NULL;
+    for (cellule_t* c = src->tete; c != NULL; c = c->suivant) {
+        cellule_t* nouv = nouvelleCellule();
+        nouv->command = c->command;
+        if (c->bloc != NULL) {
+            nouv->bloc = cloner_bloc(c->bloc);
+        }
+        if (fin == NULL) copie->tete = nouv; else fin->suivant = nouv;
+        fin = nouv;
+    }
+    return copie;
+}
+bool sommet_est_bloc(sequence_t *pile) {
+    return pile->tete != NULL && pile->tete->bloc != NULL;
+}
+void detruire_bloc(sequence_t *b) {
+    assert(b != NULL);
+    while (b->tete != NULL) depiler(b);   // depiler libère chaque cellule
+    free(b);
 }
