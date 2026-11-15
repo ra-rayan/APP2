@@ -1,0 +1,129 @@
+Recommandations sur l'utilisation des fichiers pour l'APP2.
+A lire absolument !
+
+
+****************************************************************
+**  Pour tout le monde                                        **
+****************************************************************
+
+Renseignez ici les noms des membres de votre binôme :
+
+Nom1 - prénom1 :RAHMANI Rayan
+Nom2 - prénom2 :AKKAR Islam
+Nom2 - prénom3 :BOUICHE Zinedine
+
+
+Si vous avez des commentaires, remarques etc. pour le rendu, vous pouvez les 
+mettre ici:
+
+Compte rendu APP2
+-----------------
+
+Tests fonctionnels
+------------------
+Les 21 tests obligatoires des actes I a V passent :
+simple, calculs, mesures, marques, marques-et-mesures, copie, if,
+if-non-depile, empile, imbrique, exec, echanges, clones, compteur,
+boucle, boucle-sans-pile, rotations, ifignore, boucle-if, boucle-clone
+et langton.
+
+Les tests challenges mysterieuZe, labyrinthe et surprise ne sont pas inclus
+dans la validation obligatoire. Le test mysterieuZe n'est pas implemente.
+
+Memoire
+-------
+La verification avec Valgrind ne signale aucune fuite ni erreur memoire sur
+les 21 tests obligatoires :
+
+> printf '\n' | TERM=xterm python3 tests/check.py --mem-quiet -I c
+
+Complexite et performances
+--------------------------
+Les tests de performance ont ete lances avec :
+
+> make silent
+> ./tests/performance/perf.py c
+
+La conversion du programme en liste et la plupart des operations simples
+sont lineaires en la taille du programme O(n). Toutes les suites testees
+passent jusqu'a 8 192 000 caracteres.
+
+Mesures finales pour 8 192 000 caracteres :
+- base : 0,98 s et 0,25 GB ;
+- long : 0,62 s et 0,25 GB ;
+- nested : 0,77 s et 0,27 GB ;
+- memfree : 0,01 s et moins de 0,01 GB ;
+- piiile : 7,64 s et 2,52 GB.
+
+Les suites base, long, nested et piiile montrent une croissance lineaire
+O(n) du temps. La suite piiile consomme une quantite de memoire
+proportionnelle a la taille de la pile, soit O(n). La suite memfree reste
+quasi constante car elle libere les blocs au fur et a mesure.
+
+La suite nested contient de nombreux blocs imbriques. Avec la conversion
+lineaire des programmes et la gestion par listes chainees, elle reste
+lineaire sur toutes les tailles testees.
+
+Graphiques fournis :
+- base.png
+- long.png
+- nested.png
+- memfree.png
+- piiile.png
+
+Structures de donnees
+---------------------
+Les programmes, les piles et les blocs sont representes par des listes
+chainees. Cette representation permet les empilements et depilements en
+O(1). Les blocs imbriques sont clones et detruits recursivement afin d'eviter
+les partages de memoire et les fuites.
+
+
+
+
+****************************************************************
+**  Langage Python                                            **
+****************************************************************
+
+Utilisez (et modifiez) le script "run.py" fourni.
+(Lire le debut de ce fichier pour une explication de comment lancer les tests.)
+
+
+Pour les tests de performance : lire le fichier LISEZMOI-perfs.txt
+
+
+****************************************************************
+**  Langage C                                                 **
+****************************************************************
+
+Compilation
+-----------
+Pour compiler :
+> make
+
+ou
+
+> clang -Wall -Wextra main.c -o main curiosity.c interprete.c listes.c
+(Nous vous conseillons d'utiliser le compilateur clang plutôt que gcc.)
+
+
+Lancer un test
+--------------
+
+Test complet
+> ./main tests/<nom de test>.test
+
+Test en mode "pas à pas" :
+> ./main -d tests/<nom de test>.test
+
+
+Lancer une suite de tests
+-------------------------
+
+Tests fonctionnels :
+> ./tests/check.py c
+
+Tests en vérifiant les erreurs ou fuites mémoire:
+> ./tests/check.py --mem c
+
+Pour les tests de performance : lire le fichier LISEZMOI-perfs.txt
