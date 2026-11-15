@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <string.h>
 #ifdef NCURSES
 #include <ncurses.h>
 #endif
@@ -38,35 +39,51 @@ void detruireCellule (cellule_t* cel)
  */
 void conversion(char *texte, sequence_t *seq) {
     seq->tete = NULL;
-    
-    if (texte == NULL || texte[0] == '\0') {
-        return; // Si le texte est vide, on s'arrête là
-    }
+    if (texte == NULL || texte[0] == '\0') return;
 
-    int i = 0;
-    cellule_t *courant = NULL;
+    size_t len = strlen(texte);
+    sequence_t **blocs = malloc((len + 1) * sizeof(sequence_t*));
+    cellule_t **fins = malloc((len + 1) * sizeof(cellule_t*));
+    int prof = 0;
+    blocs[0] = seq;
+    fins[0] = NULL;
 
-    while (texte[i] != '\0') {
-        cellule_t *nouveau = nouvelleCellule();
-        nouveau->command = texte[i];
+    for (int i = 0; texte[i] != '\0'; i++) {
+        char c = texte[i];
 
-        if (seq->tete == NULL) {
-            seq->tete = nouveau;
-            courant = nouveau;
-        } else {
-            courant->suivant = nouveau;
-            courant = nouveau; // avance
+        if (c == '}') {
+            if (prof > 0) prof--;
+            continue;
         }
-        i++;
+
+        cellule_t *nouv = nouvelleCellule();
+        nouv->command = c;
+
+        if (fins[prof] == NULL) blocs[prof]->tete = nouv;
+        else fins[prof]->suivant = nouv;
+        fins[prof] = nouv;
+
+        if (c == '{') {
+            sequence_t *b = malloc(sizeof(sequence_t));
+            b->tete = NULL;
+            nouv->bloc = b;
+            prof++;
+            blocs[prof] = b;
+            fins[prof] = NULL;
+        }
     }
+    free(blocs);
+    free(fins);
 }
 
 
 
 void afficher(sequence_t* seq) {
     assert(seq);
-    for (cellule_t *c = seq->tete; c != NULL; c = c->suivant)
-        printf("%c", c->command);
+    for (cellule_t *c = seq->tete; c != NULL; c = c->suivant) {
+        if (c->bloc != NULL) { printf("{"); afficher(c->bloc); printf("}"); }
+        else printf("%c", c->command);
+    }
 }
 
 void empiler(sequence_t* seq, char c) {
@@ -131,9 +148,7 @@ sequence_t* cloner_bloc(sequence_t* src) {
     for (cellule_t* c = src->tete; c != NULL; c = c->suivant) {
         cellule_t* nouv = nouvelleCellule();
         nouv->command = c->command;
-        if (c->bloc != NULL) {
-            nouv->bloc = cloner_bloc(c->bloc);
-        }
+        if (c->bloc != NULL) nouv->bloc = cloner_bloc(c->bloc);
         if (fin == NULL) copie->tete = nouv; else fin->suivant = nouv;
         fin = nouv;
     }
@@ -144,6 +159,12 @@ bool sommet_est_bloc(sequence_t *pile) {
 }
 void detruire_bloc(sequence_t *b) {
     assert(b != NULL);
-    while (b->tete != NULL) depiler(b);   // depiler libère chaque cellule
+    cellule_t *c = b->tete;
+    while (c != NULL) {
+        cellule_t *suiv = c->suivant;
+        if (c->bloc != NULL) detruire_bloc(c->bloc);
+        detruireCellule(c);
+        c = suiv;
+    }
     free(b);
 }

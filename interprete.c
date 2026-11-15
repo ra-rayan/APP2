@@ -42,6 +42,7 @@ int interprete (sequence_t* seq, bool debug)
 
     while (seq->tete != NULL) {
         
+        sequence_t *bloc_cel = seq->tete->bloc;
         commande = depiler(seq);
 
         if (commande >= '0' && commande <= '9') {
@@ -85,33 +86,8 @@ int interprete (sequence_t* seq, bool debug)
                 }
                 case '{':
                 {
-                    sequence_t* bloc = malloc(sizeof(sequence_t));
-                    bloc->tete = NULL;
-                    
-                    int nb_accolades = 1;
-                    cellule_t* courant = NULL;
-
-                    while (seq->tete != NULL && nb_accolades > 0) {
-                        char c = depiler(seq);
-                        
-                        if (c == '{') nb_accolades++;
-                        if (c == '}') nb_accolades--;
-
-                        if (nb_accolades > 0) {
-                            cellule_t* nouv = nouvelleCellule();
-                            nouv->command = c;
-                            if (bloc->tete == NULL) {
-                                bloc->tete = nouv;
-                                courant = nouv;
-                            } else {
-                                courant->suivant = nouv;
-                                courant = nouv;
-                            }
-                        }
-                    }
-                    empiler_bloc(&pile, bloc);
-                    break;
-                }
+                empiler_bloc(&pile, bloc_cel);
+                break;}
                 case '?':
                 {
                     sequence_t* blocF = depiler_bloc(&pile);
