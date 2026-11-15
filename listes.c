@@ -16,7 +16,7 @@
  *
  */
 
-bool silent_mode = false;
+bool silent_mode = true;
 
 
 cellule_t* nouvelleCellule (void) {
@@ -77,7 +77,6 @@ void conversion(char *texte, sequence_t *seq) {
 }
 
 
-
 void afficher(sequence_t* seq) {
     assert(seq);
     for (cellule_t *c = seq->tete; c != NULL; c = c->suivant) {
@@ -132,12 +131,16 @@ void inserer_en_tete(sequence_t *routine, sequence_t *bloc){
     
     assert(routine != NULL);
     assert(bloc != NULL);
-    if (bloc->tete == NULL) return;
+    if (bloc->tete == NULL) {
+        free(bloc);
+        return;
+    }
     cellule_t *c = bloc->tete;
     while (c->suivant != NULL) c = c->suivant;
     c->suivant = routine->tete;
     routine->tete = bloc->tete;
     bloc->tete = NULL;
+    free(bloc);
 }
 
 sequence_t* cloner_bloc(sequence_t* src) {

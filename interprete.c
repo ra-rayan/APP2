@@ -9,8 +9,8 @@
 #include "curiosity.h"
 
 /*
- *  Auteur(s) :
- *  Date :
+ *  Auteur(s) :RAHMANI Rayan & AKKAR Islam & BOUICHE Zinedine
+ *  Date : 2026-11-15
  *  Suivi des Modifications :
  *
  */
@@ -22,15 +22,24 @@ void stop (void)
     while (enter != '\r' && enter != '\n') { enter = getchar(); }
 }
 
+static void detruire_sequence(sequence_t *seq)
+{
+    while (seq->tete != NULL) {
+        cellule_t *cellule = seq->tete;
+        seq->tete = cellule->suivant;
+        if (cellule->bloc != NULL) detruire_bloc(cellule->bloc);
+        detruireCellule(cellule);
+    }
+}
+
 int interprete (sequence_t* seq, bool debug)
 {
     char commande;
-    //int ret;
+    int resultat = CIBLERATEE;
     
     sequence_t pile;
     pile.tete = NULL;
 
-    debug = true; /* À enlever par la suite et utiliser "-d" sur la ligne de commandes */
     
     /* L'affichage est désactivé en mode silencieux */
     if (! silent_mode) {
@@ -40,8 +49,8 @@ int interprete (sequence_t* seq, bool debug)
         if (debug) stop();
     }
 
-    while (seq->tete != NULL) {
-        
+    while (seq->tete != NULL && resultat == CIBLERATEE) {
+
         sequence_t *bloc_cel = seq->tete->bloc;
         commande = depiler(seq);
 
@@ -105,13 +114,12 @@ int interprete (sequence_t* seq, bool debug)
                         fin->suivant = seq->tete;
                         seq->tete = a_executer->tete;
                         free(a_executer);
+                    } else if (a_executer != NULL) {
+                        free(a_executer);
                     }
 
                     if (a_ignorer != NULL) {
-                        while (a_ignorer->tete != NULL) {
-                            depiler(a_ignorer);
-                        }
-                        free(a_ignorer);
+                        detruire_bloc(a_ignorer);
                     }
                     break;
                 }
@@ -137,11 +145,9 @@ int interprete (sequence_t* seq, bool debug)
                             b->suivant = seq->tete;
                             seq->tete = b;                         
                             inserer_en_tete(seq, copie); 
-                            free(copie);
                             } 
                             else {
-                                while (cmd->tete != NULL) depiler(cmd);
-                                free(cmd);
+                                detruire_bloc(cmd);
                                 }
                             break;
                             }
@@ -188,10 +194,22 @@ int interprete (sequence_t* seq, bool debug)
                     }
                     break;
                 }
+                case 'Z':
+                {
+                    cellule_t *prec = NULL;
+                    cellule_t *cour = pile.tete;
+                    while (cour != NULL) {
+                        cellule_t *suiv = cour->suivant;
+                        cour->suivant = prec;
+                        prec = cour;
+                        cour = suiv;
+                    }
+                    pile.tete = prec;
+                    break;
+                }
                 case 'A':
                     {int ret = avance();
-                    if (ret == VICTOIRE) return VICTOIRE;
-                    if (ret == RATE)     return RATE;
+                    if (ret == VICTOIRE || ret == RATE) resultat = ret;
                     break;
                 }
                 case 'G':
@@ -211,7 +229,7 @@ int interprete (sequence_t* seq, bool debug)
         }
 
         /* Affichage pour faciliter le debug */
-        if (! silent_mode) {
+        if (! silent_mode && resultat == CIBLERATEE) {
             afficherCarte();
             printf ("Programme restant : ");
             afficher(seq);
@@ -220,6 +238,8 @@ int interprete (sequence_t* seq, bool debug)
         }
     }
 
-    /* Si on sort de la boucle sans arriver sur la cible, c'est raté :-( */
-    return CIBLERATEE;
+    // Si on sort de la boucle, c'est que le programme est terminé ou qu'il a échoué 
+    detruire_sequence(seq);
+    detruire_sequence(&pile);
+    return resultat;
 }
